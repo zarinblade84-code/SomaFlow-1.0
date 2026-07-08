@@ -24,8 +24,7 @@ export async function GET(request: NextRequest) {
                 cookieStore.set(name, value, options);
               });
             } catch (error) {
-              // The setAll method was called from a Server Component.
-              // This can be safely ignored here.
+              // Safe to ignore in Server Components
             }
           },
         },
@@ -35,6 +34,5 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  // Redirect to your homepage/dashboard
   return NextResponse.redirect(`${origin}/`);
 }
