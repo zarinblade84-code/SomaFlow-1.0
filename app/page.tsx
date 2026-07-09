@@ -244,19 +244,62 @@ export default function Home() {
   const addThought = (e: React.FormEvent) => { e.preventDefault(); if (!newThought.trim()) return; setThoughts(prev => [{ id: Date.now(), text: newThought }, ...prev]); setNewThought(''); };
   const deleteThought = (id: number) => setThoughts(prev => prev.filter(t => t.id !== id));
 
-  const stopFrequencies = () => { oscillatorsRef.current.forEach(o => { try { o.stop(); } catch(e){} }); oscillatorsRef.current = []; if (audioCtxRef.current) { audioCtxRef.current.close(); audioCtxRef.current = null; } setActiveFrequency('off'); };
-  const toggleFrequency = (type: 'gamma' | 'alpha' | 'theta' | 'delta') => {
+  const stopFrequencies = () => { 
+    oscillatorsRef.current.forEach(o => { 
+      try { o.stop(); o.disconnect(); } catch(e){} 
+    }); 
+    oscillatorsRef.current = []; 
+    if (audioCtxRef.current) { 
+      audioCtxRef.current.close(); 
+      audioCtxRef.current = null; 
+    } 
+    setActiveFrequency('off'); 
+  };
+
+  const toggleFrequency = async (type: 'gamma' | 'alpha' | 'theta' | 'delta') => {
     if (activeFrequency === type) return stopFrequencies();
     stopFrequencies();
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)(); audioCtxRef.current = ctx;
-    const masterGain = ctx.createGain(); masterGain.gain.value = 0.05; masterGain.connect(ctx.destination);
+    
+    // 1. Initialize with cross-browser support
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    const ctx = new AudioContext(); 
+    audioCtxRef.current = ctx;
+    
+    // 2. Mobile Safari / Chrome Autoplay bypass: Force resume on user interaction
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+
+    const masterGain = ctx.createGain(); 
+    masterGain.gain.value = 0.05; // Keeps it safely in the background
+    masterGain.connect(ctx.destination);
+    
     let offset = type === 'gamma' ? 40 : type === 'theta' ? 6 : type === 'delta' ? 2 : 10;
-    const oscLeft = ctx.createOscillator(); const oscRight = ctx.createOscillator();
-    const pannerLeft = ctx.createStereoPanner(); const pannerRight = ctx.createStereoPanner();
-    oscLeft.frequency.value = 432; oscRight.frequency.value = 432 + offset; pannerLeft.pan.value = -1; pannerRight.pan.value = 1;
-    oscLeft.connect(pannerLeft).connect(masterGain); oscRight.connect(pannerRight).connect(masterGain); oscLeft.start(); oscRight.start();
-    oscillatorsRef.current = [oscLeft, oscRight]; setActiveFrequency(type);
-  };
+    
+    const oscLeft = ctx.createOscillator(); 
+    const oscRight = ctx.createOscillator();
+    const pannerLeft = ctx.createStereoPanner ? ctx.createStereoPanner() : null; 
+    const pannerRight = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    
+    oscLeft.frequency.value = 432; 
+    oscRight.frequency.value = 432 + offset; 
+    
+    // Fallback for older iOS versions that don't support StereoPanner
+    if (pannerLeft && pannerRight) {
+        pannerLeft.pan.value = -1; 
+        pannerRight.pan.value = 1;
+        oscLeft.connect(pannerLeft).connect(masterGain); 
+        oscRight.connect(pannerRight).connect(masterGain); 
+    } else {
+        oscLeft.connect(masterGain);
+        oscRight.connect(masterGain);
+    }
+    
+    oscLeft.start(); 
+    oscRight.start();
+    oscillatorsRef.current = [oscLeft, oscRight]; 
+    setActiveFrequency(type);
+  }
 
   const startBreathing = () => {
     if (breathingPhase !== '') return; setBreathingPhase('Inhale...'); setTimeout(() => setBreathingPhase('Hold...'), 4000);
