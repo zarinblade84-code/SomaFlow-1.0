@@ -1,6 +1,6 @@
 import './globals.css';
-import Logo from './components/BrandLogo'; 
-import WelcomeGuide from './components/WelcomeGuide';
+import Logo from '../components/BrandLogo'; 
+import WelcomeGuide from '../components/WelcomeGuide';
 import Link from 'next/link';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
