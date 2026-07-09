@@ -1,5 +1,5 @@
 import './globals.css';
-import Logo from './components/logo'; 
+import Logo from './components/BrandLogo';
 import OnboardingGuide from './components/OnboardingGuide';
 import Link from 'next/link';
 
