@@ -1,46 +1,36 @@
-export default function PrivacyPolicy() {
-    return (
-      <div className="max-w-4xl mx-auto p-8 py-12 text-gray-800">
-        <h1 className="text-4xl font-bold mb-6">Privacy Policy for SomaFlow</h1>
-        <p className="mb-8 text-gray-600"><strong>Last Updated:</strong> July 2026</p>
-  
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">1. Information We Collect</h2>
-          <p className="mb-2">We collect information to provide and improve our service to you.</p>
-          <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li><strong>Personal Information:</strong> When you sign in with Google, we receive your name and email address.</li>
-            <li><strong>Usage Data:</strong> We automatically collect technical data such as your IP address and browser type to improve performance.</li>
-            <li><strong>User Content:</strong> We store the tasks, protocols, and energy logs you create within the application.</li>
-          </ul>
+import React from 'react';
+
+export default function PrivacyPage() {
+  return (
+    <div className="min-h-screen bg-zinc-950 text-zinc-300 p-6 md:p-12 max-w-3xl mx-auto font-sans">
+      <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Privacy Policy</h1>
+      <p className="text-xs text-zinc-500 mb-8">Last Updated: July 2026</p>
+
+      <div className="space-y-8 backend-text">
+        <section>
+          <h2 className="text-xl font-semibold text-white mb-3">Third-Party Services</h2>
+          <p className="leading-relaxed">
+            We utilize secure third-party services (like Supabase for data management and Lemon Squeezy for payment processing) that may access relevant data to perform their required operational functions. When required by law, we may also disclose information to government authorities.
+          </p>
         </section>
-  
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">2. How We Use Your Information</h2>
-          <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li>To provide, maintain, and improve our services.</li>
-            <li>To manage your account and authenticate your identity.</li>
-            <li>To communicate with you regarding updates, security, or support.</li>
-          </ul>
+
+        <section>
+          <h2 className="text-xl font-semibold text-white mb-3">Data Security</h2>
+          <p className="leading-relaxed">
+            We implement standard industry security measures to protect your information from unauthorized access. However, please note that no method of transmission over the internet or electronic storage is 100% secure.
+          </p>
         </section>
-  
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">3. How We Share Your Information</h2>
-          <p className="mb-4">We do not sell your personal data. We may share information in limited circumstances:</p>
-          <ul className="list-disc pl-6 mb-4 space-y-2">
-            <li><strong>Service Providers:</strong> We use third-party services (like Supabase and Lemon Squeezy) that may access data to perform their functions.</li>
-            <li><strong>Legal Obligations:</strong> If required by law, we may disclose information to government authorities.</li>
-          </ul>
-        </section>
-  
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">4. Data Security</h2>
-          <p className="mb-4">We implement industry-standard security measures to protect your information. However, no method of transmission over the internet is 100% secure.</p>
-        </section>
-  
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">5. Contact Us</h2>
-          <p className="mb-4">If you have questions about this Privacy Policy, please contact us at: <strong>[somaflow.hq@gail.com]</strong></p>
+
+        <section className="pt-4 border-t border-zinc-800">
+          <h2 className="text-xl font-semibold text-white mb-3">Contact Us</h2>
+          <p className="leading-relaxed">
+            If you have any questions or concerns regarding this Privacy Policy, please reach out to our team directly at:{' '}
+            <a href="mailto:somaflow.hq@gmail.com" className="text-[#1ea39b] font-medium hover:underline">
+              somaflow.hq@gmail.com
+            </a>
+          </p>
         </section>
       </div>
-    );
-  }
+    </div>
+  );
+}
