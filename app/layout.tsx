@@ -3,6 +3,15 @@ import Logo from '../components/BrandLogo';
 import WelcomeGuide from '../components/WelcomeGuide';
 import Link from 'next/link';
 
+// 1. This forces Next.js and Vercel to broadcast your new icon and smash the cache
+export const metadata = {
+  title: 'SomaFlow',
+  icons: {
+    icon: '/icon.png?v=3',
+    apple: '/icon.png?v=3',
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
