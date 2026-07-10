@@ -15,7 +15,8 @@ const premiumMeals = [
   { name: 'Sweet Potato & Black Bean Empanadas', type: 'Global', country: 'Argentina', perfectFor: 'physical', macros: 'High Carb, Plant Protein', recipe: 'Ingredients: Masa dough, sweet potato, black beans, cumin. \n1. Mash roasted sweet potatoes with black beans.\n2. Stuff dough and bake at 400F for 20 mins.' },
   { name: 'Lavender & Honey Sous-Vide Duck', type: 'Michelin', country: 'France', perfectFor: 'recovery', macros: 'Mod Protein, Melatonin Support', recipe: 'Ingredients: Duck breast, culinary lavender, honey. \n1. Sous-vide duck at 135F for 2 hours.\n2. Sear skin-side down until crispy.\n3. Drizzle with lavender-infused honey.' },
   { name: 'Ashwagandha & Turmeric Golden Milk', type: 'Balanced', country: 'India', perfectFor: 'recovery', macros: 'Anti-inflammatory, Sleep Aid', recipe: 'Ingredients: Coconut milk, turmeric, black pepper, ashwagandha root. \n1. Heat milk on low.\n2. Whisk in spices until dissolved.\n3. Drink 1 hour before sleep.' },
-  { name: 'Tom Kha Gai (Coconut Soup)', type: 'Global', country: 'Thailand', perfectFor: 'recovery', macros: 'Electrolytes, Immune Support', recipe: 'Ingredients: Coconut milk, galangal, lemongrass, chicken, mushrooms. \n1. Simmer aromatics in broth.\n2. Add coconut milk and chicken, cook until tender.\n3. Finish with lime juice.' }
+  { name: 'Tom Kha Gai (Coconut Soup)', type: 'Global', country: 'Thailand', perfectFor: 'recovery', macros: 'Electrolytes, Immune Support', recipe: 'Ingredients: Coconut milk, galangal, lemongrass, chicken, mushrooms. \n1. Simmer aromatics in broth.\n2. Add coconut milk and chicken, cook until tender.\n3. Finish with lime juice.' },
+  { name: 'Chilled Cucumber & Kefir Soup', type: 'Balanced', country: 'Global', perfectFor: 'cooling', macros: 'High Hydration, Probiotics', recipe: 'Ingredients: Kefir, cucumber, dill, mint. \n1. Blend ingredients until smooth.\n2. Chill for 2 hours.\n3. Perfect for rapid core temperature cooling post-heat exposure.' }
 ];
 
 export default function Home() {
@@ -24,7 +25,7 @@ export default function Home() {
   // ==========================================
   const [session, setSession] = useState<any>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(true); // NEW: THEME STATE
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   const [isPro, setIsPro] = useState(false);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
@@ -44,6 +45,11 @@ export default function Home() {
   const [energyLogs, setEnergyLogs] = useState<any[]>([]);
   const initialLoadRef = useRef(true);
 
+  // NEW: DATE AND WEATHER STATE
+  const getTodayStr = () => new Date().toISOString().split('T')[0];
+  const [taskDate, setTaskDate] = useState(getTodayStr());
+  const [localEnvironment, setLocalEnvironment] = useState({ temp: 32, humidity: 75, uvIndex: 9, condition: 'Hot/Humid' }); // Simulated local weather
+
   const [title, setTitle] = useState('');
   const [energy, setEnergy] = useState('Medium');
   const [durationValue, setDurationValue] = useState(15); 
@@ -58,7 +64,6 @@ export default function Home() {
   const oscillatorsRef = useRef<any[]>([]);
   const triggeredAlerts = useRef<Set<string>>(new Set());
 
-  // --- NEW: DYNAMIC THEME ENGINE ---
   const theme = isDarkMode ? {
     bg: 'bg-slate-900', text: 'text-white', muted: 'text-slate-400', card: 'bg-slate-800/80',
     input: 'bg-slate-900/80 border-slate-700 text-white', item: 'bg-slate-900/60', modal: 'bg-slate-800',
@@ -75,7 +80,7 @@ export default function Home() {
     if (neuralCapacity < 50) {
       setTasks(prevTasks => {
         const hasResetTask = prevTasks.some(t => t.title === 'Neural Reset Breathwork');
-        if (!hasResetTask) return [{ id: Date.now(), title: 'Neural Reset Breathwork', energy_level: 'Critical', durationValue: 5, durationUnit: 'minutes', user_id: session?.user?.id }, ...prevTasks];
+        if (!hasResetTask) return [{ id: Date.now(), title: 'Neural Reset Breathwork', energy_level: 'Critical', durationValue: 5, durationUnit: 'minutes', taskDate: getTodayStr(), user_id: session?.user?.id }, ...prevTasks];
         return prevTasks;
       });
     }
@@ -113,21 +118,51 @@ export default function Home() {
 
   const analyzeTask = (taskTitle: string) => {
     const t = taskTitle.toLowerCase();
-    if (t.match(/code|build|program|study|write|design|read|focus/)) return 'cognitive';
-    if (t.match(/run|lift|gym|workout|cardio|train/)) return 'physical';
+    if (t.match(/code|build|program|study|write|design|read|focus|meeting/)) return 'cognitive';
+    if (t.match(/run|lift|gym|workout|cardio|train|sport|football|basketball/)) return 'physical';
     if (t.match(/sleep|nap|rest|recover|meditate/)) return 'recovery';
     return 'balanced';
   };
 
+  // --- NEW: ENVIRONMENTAL SCHEDULING ENGINE ---
   const getRecommendations = (taskTitle: string, index: number) => {
     const category = analyzeTask(taskTitle);
-    const suitableMeals = premiumMeals.filter(m => m.perfectFor === category || m.perfectFor === 'balanced');
-    let time = '02:00 PM - 04:00 PM';
-    if (category === 'cognitive') time = '08:00 AM - 11:30 AM (Peak Focus)';
-    else if (category === 'physical') time = '06:30 AM - 08:00 AM (Metabolic Spike)';
-    else if (category === 'recovery') time = '09:00 PM - 06:00 AM (Deep Rest)';
-    else if (index === 0) time = '08:00 AM - 09:30 AM';
-    return { dietOptions: suitableMeals.map(m => m.name), time, suitableMeals };
+    const titleLower = taskTitle.toLowerCase();
+    let suitableMeals = category === 'balanced' ? premiumMeals : premiumMeals.filter(m => m.perfectFor === category);
+    
+    let time = '10:00 AM - 11:00 AM';
+    let environmentalWarning = null;
+
+    // 1. Weather-Optimized Physical Tasks
+    if (category === 'physical') {
+       if (localEnvironment.temp > 30 || localEnvironment.uvIndex > 7) {
+          // Push to early morning or late evening to avoid heat stroke/UV damage
+          time = '06:00 AM - 07:30 AM (Heat/UV Avoidance)';
+          environmentalWarning = `High Temp (${localEnvironment.temp}°C) & UV (${localEnvironment.uvIndex}) detected. Auto-shifted to early AM to prevent heat exhaustion.`;
+          
+          // Inject cooling hydration meal if heat is detected
+          const coolingMeal = premiumMeals.find(m => m.perfectFor === 'cooling');
+          if (coolingMeal && !suitableMeals.includes(coolingMeal)) suitableMeals.unshift(coolingMeal);
+       } else {
+          time = '04:30 PM - 06:00 PM (Metabolic Spike)';
+       }
+    } 
+    // 2. Logically Correct Sleep/Rest Tasks
+    else if (category === 'recovery') {
+       if (titleLower.includes('nap') || titleLower.includes('afternoon')) {
+          time = '02:00 PM - 03:00 PM (Circadian Dip)';
+       } else if (titleLower.includes('sleep') || titleLower.includes('bed')) {
+          time = '10:00 PM - 06:00 AM (Deep REM Block)';
+       } else {
+          time = '08:00 PM - 09:00 PM (Down-regulation)';
+       }
+    }
+    // 3. Cognitive Tasks
+    else if (category === 'cognitive') {
+       time = '08:00 AM - 11:30 AM (Peak Cortisol/Focus)';
+    }
+
+    return { dietOptions: suitableMeals.map(m => m.name), time, suitableMeals, environmentalWarning };
   };
 
   const arrangedTasks = useMemo(() => {
@@ -138,21 +173,38 @@ export default function Home() {
       if (title.toLowerCase().includes('lunch')) return 25; if (lvl === 'Medium') return 30;
       if (lvl === 'Low') return 40; if (c === 'recovery') return 50; return 35;
     };
-    return [...tasks].sort((a, b) => getTaskWeight(a.title, a.energy_level) - getTaskWeight(b.title, b.energy_level));
+    return [...tasks].sort((a, b) => {
+      // Sort by date first, then by task weight
+      const dateA = a.taskDate || getTodayStr();
+      const dateB = b.taskDate || getTodayStr();
+      if (dateA !== dateB) return dateA.localeCompare(dateB);
+      return getTaskWeight(a.title, a.energy_level) - getTaskWeight(b.title, b.energy_level);
+    });
   }, [tasks]);
 
   const dynamicCalendar = useMemo(() => {
-    if (arrangedTasks.length === 0) return [{ id: 'empty', title: 'System Awaiting Directives', time: '--:--' }];
-    return arrangedTasks.map((t, i) => ({ id: t.id, title: t.title, time: (t.customTime || getRecommendations(t.title, i).time).split('(')[0].trim() }));
+    if (arrangedTasks.length === 0) return [{ id: 'empty', title: 'System Awaiting Directives', time: '--:--', date: '' }];
+    return arrangedTasks.map((t, i) => ({ 
+      id: t.id, 
+      title: t.title, 
+      time: (t.customTime || getRecommendations(t.title, i).time).split('(')[0].trim(),
+      date: t.taskDate || getTodayStr()
+    }));
   }, [arrangedTasks]);
 
   const chartData = useMemo(() => energyLogs.length === 0 ? [{ time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), Capacity: neuralCapacity }] : energyLogs.map(l => ({ time: new Date(l.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), Capacity: l.capacity_score })), [energyLogs, neuralCapacity]);
 
+  // --- NEW: DATE-AWARE NOTIFICATION SYSTEM ---
   useEffect(() => {
     if (arrangedTasks.length === 0) return;
     const interval = setInterval(() => {
       const now = new Date(); const h = now.getHours(); const m = now.getMinutes();
+      const todayString = getTodayStr();
+
       arrangedTasks.forEach((task, i) => {
+        // Skip notifications if the task is scheduled for a future/past date
+        if (task.taskDate && task.taskDate !== todayString) return;
+
         const [startPart, endPart] = (task.customTime || getRecommendations(task.title, i).time).split('(')[0].trim().split('-');
         if (!startPart || !endPart) return;
         const parseTime = (part: string) => {
@@ -201,16 +253,19 @@ export default function Home() {
     if (!error && data) { setProtocols(prev => [data, ...prev]); setProtocolName(''); setProtocolDesc(''); setIsProtocolSaveModalOpen(false); }
   };
 
-  const loadProtocolToQueue = (p: any) => { if (!p.saved_tasks) return; setTasks(prev => [...prev, ...p.saved_tasks.map((t: any, i: number) => ({ ...t, id: Date.now() + i, user_id: session?.user?.id }))]); };
+  const loadProtocolToQueue = (p: any) => { if (!p.saved_tasks) return; setTasks(prev => [...prev, ...p.saved_tasks.map((t: any, i: number) => ({ ...t, id: Date.now() + i, user_id: session?.user?.id, taskDate: getTodayStr() }))]); };
   const startEditingProtocol = (p: any) => { setEditingProtocolId(p.id); setEditNameValue(p.name); setEditDescValue(p.description || ''); };
   const saveEditedProtocol = async (id: string) => { const { error } = await supabase.from('protocols').update({ name: editNameValue, description: editDescValue }).eq('id', id); if (!error) setProtocols(prev => prev.map(p => p.id === id ? { ...p, name: editNameValue, description: editDescValue } : p)); setEditingProtocolId(null); };
 
   async function addTask(e: React.FormEvent) {
     e.preventDefault(); if (!session?.user?.id) return;
     if (energy === 'High' && tasks.length > 0 && tasks[tasks.length - 1].energy_level === 'High') return setSystemWarning('Consecutive heavy loads blocked.'); 
-    const newTask = { id: Date.now(), title, energy_level: energy, durationValue, durationUnit, user_id: session.user.id };
-    setTasks(prev => [...prev, newTask]); setTitle(''); setDurationValue(15); setEnergy('Medium'); setSystemWarning(null); setIsModalOpen(false);
-    try { await supabase.from('tasks').insert([{ title, energy_level: energy, user_id: session.user.id }]); } catch (error) {}
+    const newTask = { id: Date.now(), title, energy_level: energy, durationValue, durationUnit, taskDate, user_id: session.user.id };
+    
+    setTasks(prev => [...prev, newTask]); 
+    setTitle(''); setDurationValue(15); setEnergy('Medium'); setTaskDate(getTodayStr()); setSystemWarning(null); setIsModalOpen(false);
+    
+    try { await supabase.from('tasks').insert([{ title, energy_level: energy, taskDate, user_id: session.user.id }]); } catch (error) {}
   }
 
   async function deleteTask(id: number) {
@@ -221,6 +276,7 @@ export default function Home() {
   }
 
   const updateTaskCustomField = (id: number, field: string, value: string) => setTasks(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
+  
   const formatToHHMM = (rangeStr: string) => {
     if (!rangeStr) return "09:00"; const startStr = rangeStr.split('-')[0].trim(); if (!startStr.includes(':')) return "09:00";
     const [time, ampm] = startStr.split(' '); let [h, m] = time.split(':').map(Number);
@@ -228,78 +284,58 @@ export default function Home() {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
   };
 
+  // --- NEW: VALIDATE MANUAL TIME AGAINST WEATHER ---
   const handleNativeTimeChange = (id: number, hhmm: string, durationVal: number, durationUn: string) => {
     const [h, m] = hhmm.split(':').map(Number); const startDate = new Date(); startDate.setHours(h, m, 0, 0); const endDate = new Date(startDate);
     if (durationUn === 'hours') endDate.setHours(endDate.getHours() + durationVal); else endDate.setMinutes(endDate.getMinutes() + durationVal);
+    
     updateTaskCustomField(id, 'customTime', `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+
+    // Weather Validation Check for User Inputs
+    const task = tasks.find(t => t.id === id);
+    if (task && analyzeTask(task.title) === 'physical') {
+       if (h >= 11 && h <= 15 && (localEnvironment.uvIndex > 7 || localEnvironment.temp > 30)) {
+          updateTaskCustomField(id, 'weatherWarning', `MANUAL OVERRIDE WARNING: Scheduling physical output at ${hhmm} exposes you to peak UV (${localEnvironment.uvIndex}) and Heat (${localEnvironment.temp}°C). Hydration protocol critical.`);
+       } else {
+          updateTaskCustomField(id, 'weatherWarning', '');
+       }
+    }
   };
 
-  const checkIsExpired = (rangeStr: string) => {
-    if (!rangeStr) return false; const endStr = rangeStr.split('-')[1]?.trim(); if (!endStr) return false;
+  const checkIsExpired = (rangeStr: string, taskDateStr: string) => {
+    if (!rangeStr || !taskDateStr) return false; 
+    
+    const endStr = rangeStr.split('-')[1]?.trim(); if (!endStr) return false;
     const [time, ampm] = endStr.split(' '); if(!time || !ampm) return false; let [h, m] = time.split(':').map(Number);
     if (ampm.toUpperCase() === 'PM' && h < 12) h += 12; if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
-    const taskEnd = new Date(); taskEnd.setHours(h, m, 0, 0); return new Date() > taskEnd;
+    
+    // Parse the task's specific date
+    const [year, month, day] = taskDateStr.split('-').map(Number);
+    const taskEnd = new Date(year, month - 1, day, h, m, 0, 0); 
+    
+    return new Date() > taskEnd;
   };
 
   const addThought = (e: React.FormEvent) => { e.preventDefault(); if (!newThought.trim()) return; setThoughts(prev => [{ id: Date.now(), text: newThought }, ...prev]); setNewThought(''); };
   const deleteThought = (id: number) => setThoughts(prev => prev.filter(t => t.id !== id));
 
-  const stopFrequencies = () => { 
-    oscillatorsRef.current.forEach(o => { 
-      try { o.stop(); o.disconnect(); } catch(e){} 
-    }); 
-    oscillatorsRef.current = []; 
-    if (audioCtxRef.current) { 
-      audioCtxRef.current.close(); 
-      audioCtxRef.current = null; 
-    } 
-    setActiveFrequency('off'); 
-  };
-
+  const stopFrequencies = () => { oscillatorsRef.current.forEach(o => { try { o.stop(); o.disconnect(); } catch(e){} }); oscillatorsRef.current = []; if (audioCtxRef.current) { audioCtxRef.current.close(); audioCtxRef.current = null; } setActiveFrequency('off'); };
+  
   const toggleFrequency = async (type: 'gamma' | 'alpha' | 'theta' | 'delta') => {
     if (activeFrequency === type) return stopFrequencies();
     stopFrequencies();
-    
-    // 1. Initialize with cross-browser support
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AudioContext(); 
-    audioCtxRef.current = ctx;
-    
-    // 2. Mobile Safari / Chrome Autoplay bypass: Force resume on user interaction
-    if (ctx.state === 'suspended') {
-      await ctx.resume();
-    }
-
-    const masterGain = ctx.createGain(); 
-    masterGain.gain.value = 0.05; // Keeps it safely in the background
-    masterGain.connect(ctx.destination);
-    
+    const ctx = new AudioContext(); audioCtxRef.current = ctx;
+    if (ctx.state === 'suspended') await ctx.resume();
+    const masterGain = ctx.createGain(); masterGain.gain.value = 0.05; masterGain.connect(ctx.destination);
     let offset = type === 'gamma' ? 40 : type === 'theta' ? 6 : type === 'delta' ? 2 : 10;
-    
-    const oscLeft = ctx.createOscillator(); 
-    const oscRight = ctx.createOscillator();
-    const pannerLeft = ctx.createStereoPanner ? ctx.createStereoPanner() : null; 
-    const pannerRight = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-    
-    oscLeft.frequency.value = 432; 
-    oscRight.frequency.value = 432 + offset; 
-    
-    // Fallback for older iOS versions that don't support StereoPanner
-    if (pannerLeft && pannerRight) {
-        pannerLeft.pan.value = -1; 
-        pannerRight.pan.value = 1;
-        oscLeft.connect(pannerLeft).connect(masterGain); 
-        oscRight.connect(pannerRight).connect(masterGain); 
-    } else {
-        oscLeft.connect(masterGain);
-        oscRight.connect(masterGain);
-    }
-    
-    oscLeft.start(); 
-    oscRight.start();
-    oscillatorsRef.current = [oscLeft, oscRight]; 
-    setActiveFrequency(type);
-  }
+    const oscLeft = ctx.createOscillator(); const oscRight = ctx.createOscillator();
+    const pannerLeft = ctx.createStereoPanner ? ctx.createStereoPanner() : null; const pannerRight = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    oscLeft.frequency.value = 432; oscRight.frequency.value = 432 + offset; 
+    if (pannerLeft && pannerRight) { pannerLeft.pan.value = -1; pannerRight.pan.value = 1; oscLeft.connect(pannerLeft).connect(masterGain); oscRight.connect(pannerRight).connect(masterGain); } 
+    else { oscLeft.connect(masterGain); oscRight.connect(masterGain); }
+    oscLeft.start(); oscRight.start(); oscillatorsRef.current = [oscLeft, oscRight]; setActiveFrequency(type);
+  };
 
   const startBreathing = () => {
     if (breathingPhase !== '') return; setBreathingPhase('Inhale...'); setTimeout(() => setBreathingPhase('Hold...'), 4000);
@@ -334,9 +370,6 @@ export default function Home() {
     </div>
   );
 
-  // ==========================================
-  // 4. THE VISUAL LAYOUT
-  // ==========================================
   return (
     <div className={`min-h-screen ${theme.bg} ${theme.text} font-sans relative overflow-x-hidden transition-colors duration-300`}>
       <div className="fixed inset-0 opacity-15 bg-[linear-gradient(rgba(52,211,153,0.3)_2px,transparent_2px),linear-gradient(90deg,rgba(52,211,153,0.3)_2px,transparent_2px)] bg-[size:32px_32px] sm:bg-[size:64px_64px] pointer-events-none z-0"></div>
@@ -349,7 +382,6 @@ export default function Home() {
                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center font-black text-slate-900 shadow-lg shadow-emerald-500/30 text-xs sm:text-base">SF</div>
                <h1 className="text-lg sm:text-xl font-bold tracking-tight hidden sm:block">SomaFlow</h1>
              </div>
-             {/* THE THEME TOGGLE */}
              <button onClick={() => setIsDarkMode(!isDarkMode)} className={`sm:hidden px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase shadow-md transition-colors ${isDarkMode ? 'bg-slate-800 text-yellow-400 border border-slate-700' : 'bg-white text-orange-500 border border-slate-200'}`}>
                 {isDarkMode ? '☀️ LIGHT' : '🌙 DARK'}
              </button>
@@ -411,23 +443,21 @@ export default function Home() {
               </div>
             </div>
           </ProGate>
-
-          <div className={`${theme.card} border border-emerald-500/20 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-md transition-colors duration-300`}>
-            <h2 className="text-[10px] text-emerald-500 mb-4 uppercase tracking-widest font-bold">Neural Dump</h2>
-            <form onSubmit={addThought} className="mb-4 flex gap-2">
-              <input value={newThought} onChange={(e) => setNewThought(e.target.value)} placeholder="Log a thought..." className={`w-full ${theme.input} p-3 rounded-xl border focus:border-emerald-500 outline-none transition-colors text-xs`} />
-              <button type="submit" className="bg-emerald-500 text-slate-900 px-4 rounded-xl text-xs font-black hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20">+</button>
-            </form>
-            <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar pr-1">
-              {thoughts.length === 0 && <div className={`text-[10px] text-center py-4 border border-dashed rounded-xl ${theme.border} ${theme.muted}`}>No active thoughts logged.</div>}
-              {thoughts.map(t => (
-                <div key={t.id} className={`${theme.item} border border-emerald-500/10 p-3 rounded-xl flex justify-between items-start group ${theme.hover} transition-colors`}>
-                  <p className={`text-xs ${theme.text} pr-2`}>{t.text}</p>
-                  <button onClick={() => deleteThought(t.id)} className={`${theme.muted} hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold shrink-0`}>✕</button>
-                </div>
-              ))}
-            </div>
+          
+          <div className={`${theme.card} border border-emerald-500/20 rounded-3xl p-6 shadow-2xl backdrop-blur-md transition-colors`}>
+             <h2 className="text-[10px] text-emerald-500 mb-2 uppercase tracking-widest font-bold">Environment AI</h2>
+             <div className="flex justify-between items-center bg-slate-900/50 p-3 rounded-xl border border-slate-700/50">
+               <div>
+                  <span className="text-[10px] text-slate-400 block mb-1">Local Conditions</span>
+                  <span className="font-bold text-sm">{localEnvironment.temp}°C • {localEnvironment.condition}</span>
+               </div>
+               <div className="text-right">
+                  <span className="text-[10px] text-slate-400 block mb-1">UV Index</span>
+                  <span className="font-bold text-sm text-orange-500">{localEnvironment.uvIndex} (High)</span>
+               </div>
+             </div>
           </div>
+
         </section>
 
         {/* RIGHT COLUMN */}
@@ -436,7 +466,8 @@ export default function Home() {
             <h2 className="text-[10px] text-emerald-500 uppercase tracking-widest mb-4 font-bold">Bio-Optimized Sync Timeline</h2>
             <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x snap-mandatory">
               {dynamicCalendar.map(ev => (
-                <div key={ev.id} className={`min-w-[160px] sm:min-w-[200px] p-3 sm:p-4 rounded-2xl ${theme.input} border border-emerald-500/10 border-l-4 border-l-cyan-500 shrink-0 shadow-md snap-center`}>
+                <div key={ev.id} className={`min-w-[160px] sm:min-w-[200px] p-3 sm:p-4 rounded-2xl ${theme.input} border border-emerald-500/10 border-l-4 border-l-cyan-500 shrink-0 shadow-md snap-center relative`}>
+                  {ev.date !== getTodayStr() && <span className="absolute top-2 right-2 bg-slate-800 text-cyan-400 text-[8px] px-1.5 py-0.5 rounded font-bold">{ev.date.slice(5)}</span>}
                   <div className="text-[9px] sm:text-[10px] text-cyan-500 mb-1 font-mono font-bold">{ev.time}</div>
                   <div className={`font-bold text-xs sm:text-sm ${theme.text} truncate`}>{ev.title}</div>
                 </div>
@@ -502,7 +533,11 @@ export default function Home() {
                   const isRest = isRelaxingTask(task.title);
                   const isCritical = task.energy_level === 'Critical';
                   const currentWindow = task.customTime || rec.time;
-                  const isExpired = checkIsExpired(currentWindow);
+                  
+                  // Use the task's specific date for expiration checks
+                  const taskDateString = task.taskDate || getTodayStr();
+                  const isExpired = checkIsExpired(currentWindow, taskDateString);
+                  const isFuture = taskDateString > getTodayStr();
                   
                   const borderColor = isCritical ? 'border-red-500/80 shadow-red-500/20' : isRest ? 'border-purple-500/40' : task.energy_level === 'High' ? 'border-orange-500/40' : task.energy_level === 'Medium' ? 'border-yellow-500/40' : 'border-emerald-500/40';
                   const bgState = isExpired ? `${theme.item} grayscale opacity-50` : `${theme.input} hover:scale-[1.01]`;
@@ -511,6 +546,7 @@ export default function Home() {
                     <div key={task.id} onClick={() => deleteTask(task.id)} className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 group shadow-md ${borderColor} ${bgState}`}>
                       <div className="flex justify-between items-center mb-3 sm:mb-4">
                         <div className="flex items-center gap-2 truncate">
+                          {isFuture && <span className="bg-slate-800 text-cyan-400 px-2 py-0.5 rounded-md font-mono text-[8px] tracking-wider shrink-0 border border-cyan-500/30">{taskDateString}</span>}
                           <h3 className={`font-bold text-sm sm:text-lg ${theme.text} group-hover:text-emerald-500 transition-colors truncate`}>{task.title}</h3>
                           {isCritical && <span className="bg-red-500 text-white px-2 py-0.5 rounded-md font-mono text-[8px] tracking-wider uppercase shrink-0 animate-pulse">RESET</span>}
                           {isRest && !isCritical && <span className="bg-purple-500/20 text-purple-500 px-2 py-0.5 rounded-md font-mono text-[8px] tracking-wider uppercase shrink-0">⚡ Restorative</span>}
@@ -518,6 +554,18 @@ export default function Home() {
                         <span className={`text-[8px] sm:text-[10px] uppercase font-bold ${theme.muted} group-hover:text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0`}>Complete Task</span>
                       </div>
                       
+                      {/* WEATHER WARNING ALERTS */}
+                      {task.weatherWarning && (
+                        <div className="mb-3 bg-orange-500/10 border border-orange-500/40 text-orange-500 text-[9px] sm:text-[10px] p-2 rounded-lg font-bold">
+                          ⚠️ {task.weatherWarning}
+                        </div>
+                      )}
+                      {!task.weatherWarning && rec.environmentalWarning && !task.customTime && (
+                        <div className="mb-3 bg-cyan-500/10 border border-cyan-500/40 text-cyan-500 text-[9px] sm:text-[10px] p-2 rounded-lg font-bold">
+                           🌱 {rec.environmentalWarning}
+                        </div>
+                      )}
+
                       <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 ${theme.item} p-3 sm:p-4 rounded-xl text-[10px] sm:text-xs border ${theme.border}`}>
                         <div>
                           <strong className="text-emerald-500 block mb-1">Smart Nutrition AI</strong>
@@ -578,24 +626,39 @@ export default function Home() {
         </div>
       )}
 
-      {/* ADD TASK MODAL */}
+      {/* ADD TASK MODAL (UPDATED WITH DATE PICKER) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[100]">
           <form onSubmit={addTask} className={`${theme.modal} p-6 sm:p-8 rounded-3xl w-full max-w-sm sm:max-w-md border border-emerald-500/30 shadow-2xl transition-colors duration-300`}>
              <h2 className="text-lg sm:text-xl font-bold mb-5 sm:mb-6 text-emerald-500">Initialize New Task</h2>
              <input value={title} onChange={(e) => setTitle(e.target.value)} className={`w-full ${theme.input} p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 border focus:border-emerald-500 outline-none transition-colors text-sm`} placeholder="Task Designation (e.g. Code, Workout)..." required />
-             <div className="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
-                <input type="number" min="1" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className={`w-1/2 ${theme.input} p-3 sm:p-4 rounded-xl border focus:border-emerald-500 outline-none text-sm`} required />
-                <select value={durationUnit} onChange={(e) => setDurationUnit(e.target.value)} className={`w-1/2 ${theme.input} p-3 sm:p-4 rounded-xl border outline-none cursor-pointer text-sm`}>
-                  <option value="minutes">Minutes</option>
-                  <option value="hours">Hours</option>
-                </select>
+             
+             <div className="mb-3 sm:mb-4">
+                <label className="text-[10px] text-emerald-500 uppercase font-bold mb-1 block">Execution Date</label>
+                <input type="date" value={taskDate} onChange={(e) => setTaskDate(e.target.value)} className={`w-full ${theme.input} p-3 sm:p-4 rounded-xl border focus:border-emerald-500 outline-none text-sm cursor-pointer`} required />
              </div>
+
+             <div className="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
+                <div className="w-1/2">
+                   <label className="text-[10px] text-emerald-500 uppercase font-bold mb-1 block">Duration</label>
+                   <input type="number" min="1" value={durationValue} onChange={(e) => setDurationValue(Number(e.target.value))} className={`w-full ${theme.input} p-3 sm:p-4 rounded-xl border focus:border-emerald-500 outline-none text-sm`} required />
+                </div>
+                <div className="w-1/2">
+                   <label className="text-[10px] text-transparent uppercase font-bold mb-1 block">Unit</label>
+                   <select value={durationUnit} onChange={(e) => setDurationUnit(e.target.value)} className={`w-full ${theme.input} p-3 sm:p-4 rounded-xl border outline-none cursor-pointer text-sm`}>
+                     <option value="minutes">Minutes</option>
+                     <option value="hours">Hours</option>
+                   </select>
+                </div>
+             </div>
+             
+             <label className="text-[10px] text-emerald-500 uppercase font-bold mb-1 block">Energy Draw</label>
              <select value={energy} onChange={(e) => setEnergy(e.target.value)} className={`w-full ${theme.input} p-3 sm:p-4 rounded-xl mb-6 sm:mb-8 border outline-none cursor-pointer text-sm`}>
                 <option value="Low">Low Energy</option>
                 <option value="Medium">Medium Energy</option>
                 <option value="High">High Energy</option>
              </select>
+             
              <div className="flex gap-3 sm:gap-4">
                <button type="button" onClick={() => setIsModalOpen(false)} className={`w-1/2 ${theme.btnSec} py-3 sm:py-4 rounded-xl font-bold transition-colors`}>Abort</button>
                <button type="submit" className="w-1/2 bg-emerald-500 py-3 sm:py-4 rounded-xl font-black text-slate-900 shadow-lg shadow-emerald-500/20">Execute</button>
