@@ -48,7 +48,51 @@ export default function Home() {
   // NEW: DATE AND WEATHER STATE
   const getTodayStr = () => new Date().toISOString().split('T')[0];
   const [taskDate, setTaskDate] = useState(getTodayStr());
-  const [localEnvironment, setLocalEnvironment] = useState({ temp: 32, humidity: 75, uvIndex: 9, condition: 'Hot/Humid' }); // Simulated local weather
+  // 1. Set initial state to loading
+  const [localEnvironment, setLocalEnvironment] = useState({ temp: 0, humidity: 0, uvIndex: 0, condition: 'Scanning...' }); 
+
+  // 2. Fetch real-time local weather on load
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          try {
+            // Ping the free Open-Meteo API
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,uv_index&timezone=auto`);
+            const data = await res.json();
+            
+            if (data.current) {
+              const { temperature_2m, relative_humidity_2m, weather_code, uv_index } = data.current;
+              
+              // WMO Weather Interpretation Code matching
+              let condition = 'Clear';
+              if (weather_code >= 1 && weather_code <= 3) condition = 'Cloudy';
+              if (weather_code >= 45 && weather_code <= 48) condition = 'Fog';
+              if (weather_code >= 51 && weather_code <= 67) condition = 'Rain';
+              if (weather_code >= 71 && weather_code <= 77) condition = 'Snow';
+              if (weather_code >= 95) condition = 'Storm';
+
+              setLocalEnvironment({
+                temp: Math.round(temperature_2m),
+                humidity: Math.round(relative_humidity_2m),
+                uvIndex: Math.round(uv_index),
+                condition: condition
+              });
+            }
+          } catch (error) {
+            console.warn("Weather fetch failed, falling back to defaults", error);
+            setLocalEnvironment({ temp: 30, humidity: 70, uvIndex: 8, condition: 'Offline' });
+          }
+        },
+        (error) => {
+          console.warn("Location denied by user.");
+          setLocalEnvironment({ temp: 30, humidity: 70, uvIndex: 8, condition: 'Location Denied' });
+        }
+      );
+    }
+  }, []);
 
   const [title, setTitle] = useState('');
   const [energy, setEnergy] = useState('Medium');
