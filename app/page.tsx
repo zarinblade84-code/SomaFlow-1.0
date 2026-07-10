@@ -4,19 +4,49 @@ import { supabase } from '../lib/supabase';
 import { LineChart, Line, Tooltip, ResponsiveContainer, YAxis } from 'recharts';
 
 // ==========================================
-// PREMIUM NUTRITION DATABASE
+// PREMIUM NUTRITION DATABASE (NOW HIGHLY DETAILED)
 // ==========================================
 const premiumMeals = [
-  { name: 'Michelin-Style Miso Black Cod', type: 'Michelin', country: 'Japan', perfectFor: 'cognitive', macros: 'High Omega-3, Mod Protein', recipe: 'Ingredients: Black cod, white miso, mirin, sake. \n1. Marinate cod in miso-mirin glaze for 24h.\n2. Broil on high for 8-10 mins until caramelized.\n3. Serve with steamed bok choy.' },
-  { name: 'Walnut & Pomegranate Fesenjan', type: 'Global', country: 'Iran', perfectFor: 'cognitive', macros: 'High Brain-Fats, Low GI', recipe: 'Ingredients: Chicken, walnuts, pomegranate molasses. \n1. Toast and grind walnuts.\n2. Simmer chicken in walnut and pomegranate sauce for 2 hours.\n3. Serve with saffron cauliflower rice.' },
-  { name: 'Matcha & Macadamia Chia Pudding', type: 'Balanced', country: 'Global', perfectFor: 'cognitive', macros: 'High Antioxidants, sustained energy', recipe: 'Ingredients: Chia seeds, almond milk, matcha powder, macadamias. \n1. Whisk matcha into milk.\n2. Stir in chia seeds and refrigerate overnight.\n3. Top with crushed macadamias.' },
-  { name: 'Wagyu Beef Tartare & Quinoa', type: 'Michelin', country: 'France', perfectFor: 'physical', macros: 'High Protein, Complex Carbs', recipe: 'Ingredients: Wagyu beef, capers, shallots, egg yolk, quinoa. \n1. Finely dice beef and mix with minced shallots/capers.\n2. Top with raw quail egg yolk.\n3. Serve alongside toasted quinoa.' },
-  { name: 'Spicy Doro Wat (Chicken Stew)', type: 'Global', country: 'Ethiopia', perfectFor: 'physical', macros: 'High Protein, Iron-Rich', recipe: 'Ingredients: Chicken legs, berbere spice, red onions, boiled eggs. \n1. Slow-cook minced onions without oil until dark.\n2. Add berbere and chicken, simmer 1hr.\n3. Add hard-boiled eggs at the end.' },
-  { name: 'Sweet Potato & Black Bean Empanadas', type: 'Global', country: 'Argentina', perfectFor: 'physical', macros: 'High Carb, Plant Protein', recipe: 'Ingredients: Masa dough, sweet potato, black beans, cumin. \n1. Mash roasted sweet potatoes with black beans.\n2. Stuff dough and bake at 400F for 20 mins.' },
-  { name: 'Lavender & Honey Sous-Vide Duck', type: 'Michelin', country: 'France', perfectFor: 'recovery', macros: 'Mod Protein, Melatonin Support', recipe: 'Ingredients: Duck breast, culinary lavender, honey. \n1. Sous-vide duck at 135F for 2 hours.\n2. Sear skin-side down until crispy.\n3. Drizzle with lavender-infused honey.' },
-  { name: 'Ashwagandha & Turmeric Golden Milk', type: 'Balanced', country: 'India', perfectFor: 'recovery', macros: 'Anti-inflammatory, Sleep Aid', recipe: 'Ingredients: Coconut milk, turmeric, black pepper, ashwagandha root. \n1. Heat milk on low.\n2. Whisk in spices until dissolved.\n3. Drink 1 hour before sleep.' },
-  { name: 'Tom Kha Gai (Coconut Soup)', type: 'Global', country: 'Thailand', perfectFor: 'recovery', macros: 'Electrolytes, Immune Support', recipe: 'Ingredients: Coconut milk, galangal, lemongrass, chicken, mushrooms. \n1. Simmer aromatics in broth.\n2. Add coconut milk and chicken, cook until tender.\n3. Finish with lime juice.' },
-  { name: 'Chilled Cucumber & Kefir Soup', type: 'Balanced', country: 'Global', perfectFor: 'cooling', macros: 'High Hydration, Probiotics', recipe: 'Ingredients: Kefir, cucumber, dill, mint. \n1. Blend ingredients until smooth.\n2. Chill for 2 hours.\n3. Perfect for rapid core temperature cooling post-heat exposure.' }
+  { 
+    name: 'Michelin-Style Miso Black Cod', type: 'Michelin', country: 'Japan', perfectFor: 'cognitive', macros: 'High Omega-3, Mod Protein', 
+    recipe: '⏱ Prep: 15m | Cook: 10m | Marinate: 24h\n\nIngredients:\n• 2 (6oz) Black Cod fillets\n• 3 tbsp White Miso paste\n• 2 tbsp Mirin (sweet rice wine)\n• 2 tbsp Sake\n• 1 tbsp Coconut Sugar\n• 1 bundle Baby Bok Choy\n\nExecution:\n1. Whisk miso, mirin, sake, and sugar in a small saucepan over low heat until dissolved. Let cool completely.\n2. Pat the cod fillets dry and coat generously with the miso glaze. Store in an airtight container in the fridge for 24-48 hours.\n3. Preheat broiler to high. Wipe off excess marinade (to prevent burning).\n4. Place cod on a foil-lined baking sheet. Broil for 8-10 minutes until the surface is caramelized and flaky.\n5. Steam bok choy for 3 minutes, dress lightly with sesame oil, and serve alongside the cod.' 
+  },
+  { 
+    name: 'Walnut & Pomegranate Fesenjan', type: 'Global', country: 'Iran', perfectFor: 'cognitive', macros: 'High Brain-Fats, Low GI', 
+    recipe: '⏱ Prep: 20m | Cook: 2h\n\nIngredients:\n• 1 lb Boneless Chicken Thighs\n• 2 cups Walnuts (halved)\n• 1/2 cup Pomegranate Molasses\n• 1 large Yellow Onion (grated)\n• 2 cups Chicken Broth\n• 1/2 tsp Cinnamon & 1/4 tsp Turmeric\n\nExecution:\n1. Toast walnuts in a dry skillet over medium heat for 5-7 minutes. Transfer to a food processor and blend into a fine paste.\n2. Sear the chicken thighs in a heavy-bottomed pot until browned. Remove and set aside.\n3. In the same pot, sauté the grated onion until golden. Stir in the walnut paste, broth, and pomegranate molasses.\n4. Return the chicken to the pot. Bring to a boil, then reduce heat to the lowest setting, cover, and simmer for 1.5 to 2 hours until the sauce is thick, dark, and the walnut oil has separated to the top.\n5. Serve over steamed saffron cauliflower rice.' 
+  },
+  { 
+    name: 'Matcha & Macadamia Chia Pudding', type: 'Balanced', country: 'Global', perfectFor: 'cognitive', macros: 'High Antioxidants, sustained energy', 
+    recipe: '⏱ Prep: 10m | Chill: 8h\n\nIngredients:\n• 1/4 cup Organic Chia Seeds\n• 1 cup Unsweetened Almond Milk\n• 1 tsp Ceremonial Grade Matcha Powder\n• 1 tbsp Maple Syrup or Monk Fruit\n• 1/4 cup Macadamia Nuts (crushed)\n\nExecution:\n1. In a bowl, vigorously whisk the matcha powder with 2 tbsp of warm water until frothy and clump-free.\n2. Stir in the almond milk and maple syrup.\n3. Slowly whisk in the chia seeds. Wait 5 minutes, then whisk again vigorously to prevent clumping.\n4. Cover and refrigerate overnight (or for at least 4 hours).\n5. Before eating, top with crushed macadamia nuts and fresh berries for sustained cognitive fuel.' 
+  },
+  { 
+    name: 'Wagyu Beef Tartare & Quinoa', type: 'Michelin', country: 'France', perfectFor: 'physical', macros: 'High Protein, Complex Carbs', 
+    recipe: '⏱ Prep: 20m | No Cook\n\nIngredients:\n• 8oz A5 Wagyu Beef (sirloin or tenderloin, extremely cold)\n• 1 Shallot (finely minced)\n• 1 tbsp Capers (chopped)\n• 1 tsp Dijon Mustard\n• 1 tsp Truffle Oil (optional)\n• 1 Raw Quail Egg Yolk\n• 1/2 cup Toasted Quinoa\n\nExecution:\n1. Ensure the beef is partially frozen (about 30 mins in the freezer) to make slicing easier. Finely hand-dice the beef into uniform 1/4-inch cubes.\n2. In a chilled glass bowl, gently fold the beef with the minced shallots, capers, mustard, and truffle oil. Season with sea salt and fresh black pepper.\n3. Using a ring mold, plate the tartare in a perfect circle.\n4. Carefully create a small indentation in the center and lay the quail egg yolk inside.\n5. Serve immediately with crispy toasted quinoa on the side.' 
+  },
+  { 
+    name: 'Spicy Doro Wat (Chicken Stew)', type: 'Global', country: 'Ethiopia', perfectFor: 'physical', macros: 'High Protein, Iron-Rich', 
+    recipe: '⏱ Prep: 30m | Cook: 1.5h\n\nIngredients:\n• 2 lbs Chicken Drumsticks\n• 3 large Red Onions (finely minced)\n• 3 tbsp Berbere Spice Blend\n• 1/4 cup Niter Kibbeh (spiced clarified butter)\n• 1 tbsp Garlic & Ginger paste\n• 3 Hard-boiled Eggs\n\nExecution:\n1. Place minced onions in a dry, heavy pot over medium-low heat. Sweat them completely without oil or water for 30-40 minutes until reduced and dark brown.\n2. Add the spiced butter and garlic/ginger paste. Sauté for 5 minutes.\n3. Stir in the Berbere spice and 1/2 cup of water. Let this spicy paste simmer for 15 minutes to develop flavor.\n4. Score the chicken drumsticks with a knife and add them to the pot. Cover and simmer on low for 45 minutes until the chicken is fall-off-the-bone tender.\n5. Score the hard-boiled eggs and drop them into the sauce 5 minutes before serving.' 
+  },
+  { 
+    name: 'Sweet Potato & Black Bean Empanadas', type: 'Global', country: 'Argentina', perfectFor: 'physical', macros: 'High Carb, Plant Protein', 
+    recipe: '⏱ Prep: 40m | Cook: 25m\n\nIngredients:\n• 1 large Sweet Potato (roasted and mashed)\n• 1 can Black Beans (rinsed and drained)\n• 1 tsp Cumin & 1 tsp Smoked Paprika\n• 1 package Pre-made Empanada Dough (or Masa)\n• 1 Egg (for egg wash)\n\nExecution:\n1. Preheat oven to 400°F (200°C).\n2. In a bowl, thoroughly mix the mashed sweet potato, black beans, cumin, paprika, and a pinch of salt.\n3. Lay out the empanada discs. Place 2 tablespoons of the filling into the center of each disc.\n4. Fold the dough over into a half-moon shape. Use a fork to firmly crimp and seal the edges.\n5. Brush the tops lightly with beaten egg wash for a golden crust.\n6. Bake on a parchment-lined sheet for 20-25 minutes until crispy.' 
+  },
+  { 
+    name: 'Lavender & Honey Sous-Vide Duck', type: 'Michelin', country: 'France', perfectFor: 'recovery', macros: 'Mod Protein, Melatonin Support', 
+    recipe: '⏱ Prep: 10m | Sous-Vide: 2h | Sear: 5m\n\nIngredients:\n• 2 Duck Breasts\n• 1 tsp Dried Culinary Lavender\n• 2 tbsp Local Raw Honey\n• Sea Salt & Black Pepper\n• 1 sprig Fresh Thyme\n\nExecution:\n1. Score the fat side of the duck breasts in a crosshatch pattern without cutting into the meat. Season heavily with salt and pepper.\n2. Vacuum seal the duck with a sprig of thyme. Cook in a sous-vide water bath at 135°F (57°C) for exactly 2 hours.\n3. Remove duck from the bag and pat perfectly dry with paper towels.\n4. Place duck skin-side down in a cold cast-iron skillet. Turn heat to medium-low to slowly render the fat. Cook for 5-7 minutes until the skin is deeply crispy.\n5. Flip and kiss the meat side to the pan for 30 seconds. Remove and let rest.\n6. Warm the honey with the lavender and drizzle lightly over the sliced duck before serving.' 
+  },
+  { 
+    name: 'Ashwagandha & Turmeric Golden Milk', type: 'Balanced', country: 'India', perfectFor: 'recovery', macros: 'Anti-inflammatory, Sleep Aid', 
+    recipe: '⏱ Prep: 5m | Cook: 5m\n\nIngredients:\n• 1 cup Full-Fat Coconut Milk or Oat Milk\n• 1 tsp Ground Turmeric\n• 1/2 tsp Ashwagandha Root Powder\n• 1/4 tsp Ground Cinnamon\n• Pinch of Black Pepper (crucial for turmeric absorption)\n• 1 tsp Honey (optional)\n\nExecution:\n1. Pour the milk into a small saucepan over medium-low heat. Do not let it boil.\n2. Vigorously whisk in the turmeric, ashwagandha, cinnamon, and black pepper until completely dissolved.\n3. Allow the mixture to simmer gently for 3-5 minutes to release the active compounds in the spices.\n4. Remove from heat, stir in the honey if desired, and pour into a mug.\n5. Consume 60-90 minutes before your planned sleep window for optimal central nervous system down-regulation.' 
+  },
+  { 
+    name: 'Tom Kha Gai (Coconut Soup)', type: 'Global', country: 'Thailand', perfectFor: 'recovery', macros: 'Electrolytes, Immune Support', 
+    recipe: '⏱ Prep: 15m | Cook: 20m\n\nIngredients:\n• 1 can (13.5oz) Coconut Milk\n• 2 cups Chicken Broth\n• 1 stalk Lemongrass (bruised and cut into 2-inch pieces)\n• 4 slices Fresh Galangal (or ginger)\n• 1/2 lb Chicken Breast (thinly sliced)\n• 1 cup Shiitake Mushrooms\n• 2 tbsp Fish Sauce & 3 tbsp Fresh Lime Juice\n\nExecution:\n1. In a pot, bring the chicken broth to a gentle simmer. Add the bruised lemongrass and galangal. Simmer for 10 minutes to infuse the broth.\n2. Pour in the coconut milk and bring back to a gentle simmer.\n3. Add the sliced chicken and mushrooms. Cook for 5-7 minutes until the chicken is fully opaque and cooked through.\n4. Remove the pot from the heat. (Important: Do not boil the lime juice!).\n5. Stir in the fish sauce and fresh lime juice. Taste and adjust acidity if needed. Discard the lemongrass chunks before eating.' 
+  },
+  { 
+    name: 'Chilled Cucumber & Kefir Soup', type: 'Balanced', country: 'Global', perfectFor: 'cooling', macros: 'High Hydration, Probiotics', 
+    recipe: '⏱ Prep: 10m | Chill: 2h\n\nIngredients:\n• 2 cups Plain Unsweetened Kefir\n• 1 large English Cucumber (peeled and chopped)\n• 2 tbsp Fresh Dill\n• 1 tbsp Fresh Mint\n• 1 clove Garlic\n• 1 tbsp Extra Virgin Olive Oil\n\nExecution:\n1. Place the chopped cucumber, kefir, dill, mint, garlic, and a pinch of salt into a high-powered blender.\n2. Blend on high until completely smooth and aerated.\n3. Transfer to an airtight container and refrigerate for at least 2 hours. The soup must be served ice-cold to act as a proper core-temperature cooling mechanism.\n4. Serve in a chilled bowl, garnished with a drizzle of olive oil, extra cracked pepper, and a sprig of fresh dill.' 
+  }
 ];
 
 export default function Home() {
@@ -45,28 +75,45 @@ export default function Home() {
   const [energyLogs, setEnergyLogs] = useState<any[]>([]);
   const initialLoadRef = useRef(true);
 
-  // NEW: DATE AND WEATHER STATE
+  // DATE AND WEATHER STATE
   const getTodayStr = () => new Date().toISOString().split('T')[0];
   const [taskDate, setTaskDate] = useState(getTodayStr());
-  // 1. Set initial state to loading
+  
+  // Weather state starts as Scanning
   const [localEnvironment, setLocalEnvironment] = useState({ temp: 0, humidity: 0, uvIndex: 0, condition: 'Scanning...' }); 
 
-  // 2. Fetch real-time local weather on load
+  // Fetch real-time local weather on load (With 1-Hour Cache)
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+    if (typeof window === 'undefined') return;
+
+    const CACHE_KEY = 'soma_weather_cache';
+    const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour
+
+    const cachedStr = localStorage.getItem(CACHE_KEY);
+    if (cachedStr) {
+      try {
+        const { data, timestamp } = JSON.parse(cachedStr);
+        if (Date.now() - timestamp < CACHE_DURATION_MS) {
+          setLocalEnvironment(data);
+          return; 
+        }
+      } catch (e) {
+         console.warn("Cache parse error");
+      }
+    }
+
+    if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
           try {
-            // Ping the free Open-Meteo API
             const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,uv_index&timezone=auto`);
             const data = await res.json();
             
             if (data.current) {
               const { temperature_2m, relative_humidity_2m, weather_code, uv_index } = data.current;
               
-              // WMO Weather Interpretation Code matching
               let condition = 'Clear';
               if (weather_code >= 1 && weather_code <= 3) condition = 'Cloudy';
               if (weather_code >= 45 && weather_code <= 48) condition = 'Fog';
@@ -74,20 +121,21 @@ export default function Home() {
               if (weather_code >= 71 && weather_code <= 77) condition = 'Snow';
               if (weather_code >= 95) condition = 'Storm';
 
-              setLocalEnvironment({
+              const newEnv = {
                 temp: Math.round(temperature_2m),
                 humidity: Math.round(relative_humidity_2m),
                 uvIndex: Math.round(uv_index),
                 condition: condition
-              });
+              };
+
+              setLocalEnvironment(newEnv);
+              localStorage.setItem(CACHE_KEY, JSON.stringify({ data: newEnv, timestamp: Date.now() }));
             }
           } catch (error) {
-            console.warn("Weather fetch failed, falling back to defaults", error);
             setLocalEnvironment({ temp: 30, humidity: 70, uvIndex: 8, condition: 'Offline' });
           }
         },
         (error) => {
-          console.warn("Location denied by user.");
           setLocalEnvironment({ temp: 30, humidity: 70, uvIndex: 8, condition: 'Location Denied' });
         }
       );
@@ -168,7 +216,6 @@ export default function Home() {
     return 'balanced';
   };
 
-  // --- NEW: ENVIRONMENTAL SCHEDULING ENGINE ---
   const getRecommendations = (taskTitle: string, index: number) => {
     const category = analyzeTask(taskTitle);
     const titleLower = taskTitle.toLowerCase();
@@ -177,21 +224,17 @@ export default function Home() {
     let time = '10:00 AM - 11:00 AM';
     let environmentalWarning = null;
 
-    // 1. Weather-Optimized Physical Tasks
     if (category === 'physical') {
        if (localEnvironment.temp > 30 || localEnvironment.uvIndex > 7) {
-          // Push to early morning or late evening to avoid heat stroke/UV damage
           time = '06:00 AM - 07:30 AM (Heat/UV Avoidance)';
           environmentalWarning = `High Temp (${localEnvironment.temp}°C) & UV (${localEnvironment.uvIndex}) detected. Auto-shifted to early AM to prevent heat exhaustion.`;
           
-          // Inject cooling hydration meal if heat is detected
           const coolingMeal = premiumMeals.find(m => m.perfectFor === 'cooling');
           if (coolingMeal && !suitableMeals.includes(coolingMeal)) suitableMeals.unshift(coolingMeal);
        } else {
           time = '04:30 PM - 06:00 PM (Metabolic Spike)';
        }
     } 
-    // 2. Logically Correct Sleep/Rest Tasks
     else if (category === 'recovery') {
        if (titleLower.includes('nap') || titleLower.includes('afternoon')) {
           time = '02:00 PM - 03:00 PM (Circadian Dip)';
@@ -201,7 +244,6 @@ export default function Home() {
           time = '08:00 PM - 09:00 PM (Down-regulation)';
        }
     }
-    // 3. Cognitive Tasks
     else if (category === 'cognitive') {
        time = '08:00 AM - 11:30 AM (Peak Cortisol/Focus)';
     }
@@ -218,7 +260,6 @@ export default function Home() {
       if (lvl === 'Low') return 40; if (c === 'recovery') return 50; return 35;
     };
     return [...tasks].sort((a, b) => {
-      // Sort by date first, then by task weight
       const dateA = a.taskDate || getTodayStr();
       const dateB = b.taskDate || getTodayStr();
       if (dateA !== dateB) return dateA.localeCompare(dateB);
@@ -238,7 +279,6 @@ export default function Home() {
 
   const chartData = useMemo(() => energyLogs.length === 0 ? [{ time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), Capacity: neuralCapacity }] : energyLogs.map(l => ({ time: new Date(l.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), Capacity: l.capacity_score })), [energyLogs, neuralCapacity]);
 
-  // --- NEW: DATE-AWARE NOTIFICATION SYSTEM ---
   useEffect(() => {
     if (arrangedTasks.length === 0) return;
     const interval = setInterval(() => {
@@ -246,7 +286,6 @@ export default function Home() {
       const todayString = getTodayStr();
 
       arrangedTasks.forEach((task, i) => {
-        // Skip notifications if the task is scheduled for a future/past date
         if (task.taskDate && task.taskDate !== todayString) return;
 
         const [startPart, endPart] = (task.customTime || getRecommendations(task.title, i).time).split('(')[0].trim().split('-');
@@ -328,14 +367,12 @@ export default function Home() {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
   };
 
-  // --- NEW: VALIDATE MANUAL TIME AGAINST WEATHER ---
   const handleNativeTimeChange = (id: number, hhmm: string, durationVal: number, durationUn: string) => {
     const [h, m] = hhmm.split(':').map(Number); const startDate = new Date(); startDate.setHours(h, m, 0, 0); const endDate = new Date(startDate);
     if (durationUn === 'hours') endDate.setHours(endDate.getHours() + durationVal); else endDate.setMinutes(endDate.getMinutes() + durationVal);
     
     updateTaskCustomField(id, 'customTime', `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
 
-    // Weather Validation Check for User Inputs
     const task = tasks.find(t => t.id === id);
     if (task && analyzeTask(task.title) === 'physical') {
        if (h >= 11 && h <= 15 && (localEnvironment.uvIndex > 7 || localEnvironment.temp > 30)) {
@@ -353,7 +390,6 @@ export default function Home() {
     const [time, ampm] = endStr.split(' '); if(!time || !ampm) return false; let [h, m] = time.split(':').map(Number);
     if (ampm.toUpperCase() === 'PM' && h < 12) h += 12; if (ampm.toUpperCase() === 'AM' && h === 12) h = 0;
     
-    // Parse the task's specific date
     const [year, month, day] = taskDateStr.split('-').map(Number);
     const taskEnd = new Date(year, month - 1, day, h, m, 0, 0); 
     
@@ -497,7 +533,7 @@ export default function Home() {
                </div>
                <div className="text-right">
                   <span className="text-[10px] text-slate-400 block mb-1">UV Index</span>
-                  <span className="font-bold text-sm text-orange-500">{localEnvironment.uvIndex} (High)</span>
+                  <span className={`font-bold text-sm ${localEnvironment.uvIndex > 7 ? 'text-orange-500' : 'text-emerald-500'}`}>{localEnvironment.uvIndex}</span>
                </div>
              </div>
           </div>
@@ -578,7 +614,6 @@ export default function Home() {
                   const isCritical = task.energy_level === 'Critical';
                   const currentWindow = task.customTime || rec.time;
                   
-                  // Use the task's specific date for expiration checks
                   const taskDateString = task.taskDate || getTodayStr();
                   const isExpired = checkIsExpired(currentWindow, taskDateString);
                   const isFuture = taskDateString > getTodayStr();
@@ -598,7 +633,6 @@ export default function Home() {
                         <span className={`text-[8px] sm:text-[10px] uppercase font-bold ${theme.muted} group-hover:text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0`}>Complete Task</span>
                       </div>
                       
-                      {/* WEATHER WARNING ALERTS */}
                       {task.weatherWarning && (
                         <div className="mb-3 bg-orange-500/10 border border-orange-500/40 text-orange-500 text-[9px] sm:text-[10px] p-2 rounded-lg font-bold">
                           ⚠️ {task.weatherWarning}
@@ -613,11 +647,24 @@ export default function Home() {
                       <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 ${theme.item} p-3 sm:p-4 rounded-xl text-[10px] sm:text-xs border ${theme.border}`}>
                         <div>
                           <strong className="text-emerald-500 block mb-1">Smart Nutrition AI</strong>
-                          <div className="flex gap-2">
-                            <select value={task.customNutrition || rec.dietOptions[0]} onChange={(e) => updateTaskCustomField(task.id, 'customNutrition', e.target.value)} onClick={(e) => e.stopPropagation()} className={`flex-1 ${theme.input} border-slate-700/50 rounded-md p-1.5 outline-none focus:border-emerald-500/50 transition-colors cursor-pointer truncate`}>
+                          {/* ======================================================== */}
+                          {/* MOBILE RESPONSIVE FIX IMPLEMENTED HERE */}
+                          {/* ======================================================== */}
+                          <div className="flex gap-2 items-stretch w-full">
+                            <select 
+                              value={task.customNutrition || rec.dietOptions[0]} 
+                              onChange={(e) => updateTaskCustomField(task.id, 'customNutrition', e.target.value)} 
+                              onClick={(e) => e.stopPropagation()} 
+                              className={`flex-1 min-w-0 w-full ${theme.input} border-slate-700/50 rounded-md p-1.5 text-[10px] sm:text-xs outline-none focus:border-emerald-500/50 transition-colors cursor-pointer truncate`}
+                            >
                               {rec.dietOptions.map((opt, i) => <option key={i} value={opt}>{opt}</option> )}
                             </select>
-                            <button onClick={(e) => handleRecipeClick(task.customNutrition || rec.dietOptions[0], e)} className="bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30 px-2 rounded font-bold hover:bg-yellow-500/40 transition-colors">RECIPE</button>
+                            <button 
+                              onClick={(e) => handleRecipeClick(task.customNutrition || rec.dietOptions[0], e)} 
+                              className="shrink-0 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30 px-3 py-1.5 rounded font-bold hover:bg-yellow-500/40 transition-colors text-[9px] sm:text-[10px]"
+                            >
+                              RECIPE
+                            </button>
                           </div>
                         </div>
                         <div>
@@ -637,7 +684,7 @@ export default function Home() {
       {/* RECIPE MODAL */}
       {activeRecipe && (
         <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-[200]">
-          <div className={`${theme.modal} p-8 rounded-3xl w-full max-w-lg border border-yellow-500/50 shadow-2xl relative transition-colors duration-300`}>
+          <div className={`${theme.modal} p-8 rounded-3xl w-full max-w-lg border border-yellow-500/50 shadow-2xl relative transition-colors duration-300 max-h-[90vh] overflow-y-auto custom-scrollbar`}>
             <button onClick={() => setActiveRecipe(null)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 font-bold text-xl">✕</button>
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-2 py-1 rounded text-[10px] font-black uppercase">PRO RECIPE</span>
@@ -645,7 +692,7 @@ export default function Home() {
             </div>
             <h2 className={`text-2xl font-black ${theme.text} mb-2`}>{activeRecipe.name}</h2>
             <p className="text-emerald-500 text-xs font-mono mb-6">{activeRecipe.macros}</p>
-            <div className={`${theme.input} rounded-xl p-6 text-sm whitespace-pre-line border border-slate-700/50`}>
+            <div className={`${theme.input} rounded-xl p-6 text-sm whitespace-pre-line border border-slate-700/50 leading-relaxed`}>
               {activeRecipe.recipe}
             </div>
           </div>
@@ -670,7 +717,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ADD TASK MODAL (UPDATED WITH DATE PICKER) */}
+      {/* ADD TASK MODAL (WITH DATE PICKER) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[100]">
           <form onSubmit={addTask} className={`${theme.modal} p-6 sm:p-8 rounded-3xl w-full max-w-sm sm:max-w-md border border-emerald-500/30 shadow-2xl transition-colors duration-300`}>
